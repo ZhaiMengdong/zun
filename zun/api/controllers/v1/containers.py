@@ -283,7 +283,6 @@ class ContainersController(base.Controller):
         extra_spec = {}
         extra_spec['hints'] = container_dict.get('hints', None)
         extra_spec['pci_requests'] = pci_req
-        privileged = container_dict.pop('privileged')
         if container_dict.has_key('privileged'):
             privileged = container_dict.pop('privileged')
         else:
