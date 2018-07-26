@@ -169,7 +169,7 @@ class Manager(periodic_task.PeriodicTasks):
         raise exception.Conflict(msg)
 
     def container_create(self, context, limits, requested_networks,
-                         requested_volumes, container, run, pci_requests=None):
+                         requested_volumes, container, run, privileged, pci_requests=None):
         @utils.synchronized(container.uuid)
         def do_container_create():
             requested_volumes_v = []
@@ -208,7 +208,7 @@ class Manager(periodic_task.PeriodicTasks):
         container.save(context)
 
     def _do_container_create_base(self, context, container, requested_networks,
-                                  requested_volumes, sandbox=None, limits=None,
+                                  requested_volumes, privileged, sandbox=None, limits=None,
                                   reraise=False):
         self._update_task_state(context, container, consts.IMAGE_PULLING)
         repo, tag = utils.parse_image_name(container.image)
@@ -250,7 +250,7 @@ class Manager(periodic_task.PeriodicTasks):
                 self.driver.read_tar_image(image)
             container = self.driver.create(context, container, image,
                                            requested_networks,
-                                           requested_volumes)
+                                           requested_volumes, privileged)
             self._update_task_state(context, container, None)
             return container
         except exception.DockerError as e:
@@ -272,7 +272,7 @@ class Manager(periodic_task.PeriodicTasks):
 
     @wrap_container_event(prefix='compute')
     def _do_container_create(self, context, container, requested_networks,
-                             requested_volumes, pci_requests=None,
+                             requested_volumes, privileged, pci_requests=None,
                              limits=None, reraise=False):
         LOG.debug('Creating container: %s', container.uuid)
 
@@ -291,7 +291,7 @@ class Manager(periodic_task.PeriodicTasks):
 
                 created_container = self._do_container_create_base(
                     context, container, requested_networks, requested_volumes,
-                    sandbox, limits, reraise)
+                    privileged, sandbox, limits, reraise)
                 return created_container
         except Exception as e:
             # Other exception has handled in create sandbox and create base,

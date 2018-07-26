@@ -283,6 +283,7 @@ class ContainersController(base.Controller):
         extra_spec = {}
         extra_spec['hints'] = container_dict.get('hints', None)
         extra_spec['pci_requests'] = pci_req
+        privileged = container_dict.pop('privileged')
         new_container = objects.Container(context, **container_dict)
         new_container.create(context)
 
@@ -290,6 +291,7 @@ class ContainersController(base.Controller):
         kwargs['extra_spec'] = extra_spec
         kwargs['requested_networks'] = requested_networks
         kwargs['requested_volumes'] = requested_volumes
+        kwargs['privileged'] = privileged
         if pci_req.requests:
             kwargs['pci_requests'] = pci_req
         kwargs['run'] = run

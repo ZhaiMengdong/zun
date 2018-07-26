@@ -41,6 +41,7 @@ class API(object):
     def container_create(self, context, new_container, extra_spec,
                          requested_networks, requested_volumes, run,
                          pci_requests=None):
+                         privileged, pci_requests=None):
         host_state = None
         try:
             host_state = self._schedule_container(context, new_container,
@@ -73,6 +74,7 @@ class API(object):
                                      new_container, host_state['limits'],
                                      requested_networks, requested_volumes,
                                      run, pci_requests)
+                                     run, privileged, pci_requests)
 
     def _schedule_container(self, context, new_container, extra_spec):
         dests = self.scheduler_client.select_destinations(context,

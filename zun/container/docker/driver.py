@@ -132,7 +132,7 @@ class DockerDriver(driver.ContainerDriver):
                 LOG.warning("Unable to read image data from tarfile")
 
     def create(self, context, container, image, requested_networks,
-               requested_volumes):
+               requested_volumes, privileged):
         sandbox_id = container.get_sandbox_id()
 
         with docker_utils.docker_client() as docker:
@@ -188,6 +188,7 @@ class DockerDriver(driver.ContainerDriver):
             if container.disk:
                 disk_size = str(container.disk) + 'G'
                 host_config['storage_opt'] = {'size': disk_size}
+            host_config['privileged'] = privileged
 
             kwargs['host_config'] = docker.create_host_config(**host_config)
             image_repo = image['repo'] + ":" + image['tag']

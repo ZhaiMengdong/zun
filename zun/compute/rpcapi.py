@@ -57,12 +57,12 @@ class API(rpc_service.API):
 
     def container_create(self, context, host, container, limits,
                          requested_networks, requested_volumes, run,
-                         pci_requests):
+                         privileged, pci_requests):
         self._cast(host, 'container_create', limits=limits,
                    requested_networks=requested_networks,
                    requested_volumes=requested_volumes,
                    container=container,
-                   run=run,
+                   run=run, privileged=privileged,
                    pci_requests=pci_requests)
 
     @check_container_host

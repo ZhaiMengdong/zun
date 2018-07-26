@@ -113,6 +113,10 @@ nets = {
     'type': ['array', 'null']
 }
 
+privileged = {
+    'type': ['boolean', 'null'],
+}
+
 mounts = {
     'type': ['array', 'null'],
     'items': {
