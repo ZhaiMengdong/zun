@@ -125,6 +125,45 @@ def update_container(context, container_id, values):
     return _get_dbdriver_instance().update_container(
         context, container_id, values)
 
+@profiler.trace("db")
+def create_directory_mapping(context, values):
+    """Create a directory mapping.
+
+        :param context: The security context
+        :param values: A dict containing several items used to identify
+                       and track the directory mapping.
+        :returns: A volume mapping.
+        """
+    return _get_dbdriver_instance().create_directory_mapping(context, values)
+
+@profiler.trace("db")
+def destroy_directory_mapping(context, vm_id):
+    """Destroy a directory mapping.
+
+    :param context: Request context
+    :param vm_id: The id or uuid of a container.
+    """
+    return _get_dbdriver_instance().destroy_directory_mapping(context, vm_id)
+
+@profiler.trace("db")
+def list_directory_mappings(context, filters=None, limit=None, marker=None,
+                            sort_key=None, sort_dir=None):
+    """List matching directory mappings.
+
+    Return a list of the specified columns for all directory mappings that match
+    the specified filters.
+    :param context: The security context
+    :param filters: Filters to apply. Defaults to None.
+    :param limit: Maximum number of containers to return.
+    :param marker: the last item of the previous page; we return the next
+                   result set.
+    :param sort_key: Attribute by which results should be sorted.
+    :param sort_dir: Direction in which results should be sorted.
+                     (asc, desc)
+    :returns: A list of tuples of the specified columns.
+    """
+    return _get_dbdriver_instance().list_directory_mappings(
+        context, filters, limit, marker, sort_key, sort_dir)
 
 @profiler.trace("db")
 def list_volume_mappings(context, filters=None, limit=None, marker=None,

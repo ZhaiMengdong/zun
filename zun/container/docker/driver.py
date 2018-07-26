@@ -243,10 +243,14 @@ class DockerDriver(driver.ContainerDriver):
     def _get_binds(self, context, requested_volumes):
         binds = {}
         for volume in requested_volumes:
-            volume_driver = vol_driver.driver(provider=volume.volume_provider,
-                                              context=context)
-            source, destination = volume_driver.bind_mount(volume)
-            binds[source] = {'bind': destination}
+          if volume['type'] == 'volume':
+              volume_driver = vol_driver.driver(provider=volume['volume'].volume_provider,
+                                                context=context)
+              source, destination = volume_driver.bind_mount(volume['volume'])
+          elif volume['type'] == 'dir':
+              source = volume['directory'].local_directory
+              destination = volume['directory'].container_path
+          binds[source] = {'bind': destination}
         return binds
 
     def _setup_network_for_container(self, context, container,

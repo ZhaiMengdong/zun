@@ -440,6 +440,11 @@ class ResourceClassAlreadyExists(ResourceExists):
 class VolumeMappingAlreadyExists(ResourceExists):
     message = _("A volume mapping with %(field)s %(value)s already exists.")
 
+class DirectoryMappingAlreadyExists(ResourceExists):
+    message = _("A directory mapping with %(field)s %(value)s already exists.")
+
+class DirectoryMappingNotFound(HTTPNotFound):
+    message = _("Directory mapping %(vm_id)s could not be found.")
 
 class PortNotUsable(Invalid):
     message = _("Port %(port)s not usable for the container.")
@@ -456,6 +461,8 @@ class VolumeNotUsable(Invalid):
 class VolumeInUse(Invalid):
     message = _("Volume %(volume)s is still in use.")
 
+class DirNotExisting(Invalid):
+    message = _("Directory %(directory)s does not exist.")
 
 class PortBindingFailed(Invalid):
     message = _("Binding failed for port %(port)s, please check neutron "

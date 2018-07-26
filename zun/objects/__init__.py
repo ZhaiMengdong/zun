@@ -23,10 +23,12 @@ from zun.objects import resource_class
 from zun.objects import resource_provider
 from zun.objects import volume_mapping
 from zun.objects import zun_service
+from zun.objects import directory_mapping
 
 
 Container = container.Container
 VolumeMapping = volume_mapping.VolumeMapping
+DirectoryMapping = directory_mapping.DirectoryMapping
 ZunService = zun_service.ZunService
 Image = image.Image
 NUMANode = numa.NUMANode

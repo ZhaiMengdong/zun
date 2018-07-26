@@ -172,12 +172,20 @@ class Manager(periodic_task.PeriodicTasks):
                          requested_volumes, container, run, pci_requests=None):
         @utils.synchronized(container.uuid)
         def do_container_create():
-            self._wait_for_volumes_available(context, requested_volumes,
+            requested_volumes_v = []
+            requested_volumes_d = []
+            for request in requested_volumes:
+                if request['type'] == 'volume':
+                    requested_volumes_v.append(request['volume'])
+                elif request['type'] == 'dir':
+                    requested_volumes_d.append(request['directory'])
+            self._wait_for_volumes_available(context, requested_volumes_v,
                                              container)
-            if not self._attach_volumes(context, container, requested_volumes):
+            if not (self._attach_volumes(context, container, requested_volumes_v) and
+                    self._attach_directories(context, container, requested_volumes_d)):
                 return
             created_container = self._do_container_create(
-                context, container, requested_networks, requested_volumes,
+                context, container, requested_networks, requested_volumes, privileged,
                 pci_requests, limits)
             if run and created_container:
                 self._do_container_start(context, created_container)
@@ -294,6 +302,36 @@ class Manager(periodic_task.PeriodicTasks):
                 self._fail_container(context, container, six.text_type(e),
                                      unset_host=True)
             return
+
+    def _attach_directories(self, context, container, directories):
+        try:
+            for directory in directories:
+                directory.container_uuid = container.uuid
+                self._attach_directory(context, directory)
+            return True
+        except Exception as e:
+            return False
+
+    def _attach_directory(self, context, directory):
+        directory.create(context)
+
+    def _detach_directories(self, context, container, reraise=True):
+        directories = objects.DirectoryMapping.list_by_container(context,
+                                                                 container.uuid)
+
+        for directory in directories:
+            self._detach_directory(context, directory, reraise=reraise)
+
+    def _detach_directory(self, context, directory, reraise=True):
+        context =context.elevated()
+        try:
+            #self.driver.detach_volume(context, directory)
+            pass
+        except Exception:
+            with excutils.save_and_reraise_exception(reraise=reraise):
+                LOG.error("Failed to detach directory from "
+                          "container ")
+        directory.destroy()
 
     def _attach_volumes(self, context, container, volumes):
         try:
@@ -425,6 +463,8 @@ class Manager(periodic_task.PeriodicTasks):
                 self._fail_container(context, container, six.text_type(e))
 
         self._detach_volumes(context, container, reraise=reraise)
+
+        self._detach_directories(context, container, reraise=reraise)
 
         self._update_task_state(context, container, None)
         container.destroy(context)
