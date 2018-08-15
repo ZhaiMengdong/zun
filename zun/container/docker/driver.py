@@ -189,6 +189,9 @@ class DockerDriver(driver.ContainerDriver):
                 disk_size = str(container.disk) + 'G'
                 host_config['storage_opt'] = {'size': disk_size}
             host_config['privileged'] = privileged
+            if privileged == 'dedicated':
+                host_config['cpuset_cpus'] = container.cpuset_cpus
+                host_config['cpuset_mems'] = str(container.cpuset_mems)
 
             kwargs['host_config'] = docker.create_host_config(**host_config)
             image_repo = image['repo'] + ":" + image['tag']

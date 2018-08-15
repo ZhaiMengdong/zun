@@ -64,6 +64,9 @@ class Container(base.ZunPersistentObject, base.ZunObject):
         'user_id': fields.StringField(nullable=True),
         'image': fields.StringField(nullable=True),
         'cpu': fields.FloatField(nullable=True),
+        'cpu_policy': fields.StringField(nullable=True),
+        'cpuset_cpus': fields.StringField(nullable=True),
+        'cpuset_mems': fields.StringField(nullable=True),
         'memory': fields.StringField(nullable=True),
         'command': fields.StringField(nullable=True),
         'status': z_fields.ContainerStatusField(nullable=True),
@@ -90,6 +93,7 @@ class Container(base.ZunPersistentObject, base.ZunObject):
         'pci_devices': fields.ListOfObjectsField('PciDevice',
                                                  nullable=True),
         'disk': fields.IntegerField(nullable=True),
+        'privileged': fields.BooleanField(nullable=True),
     }
 
     @staticmethod

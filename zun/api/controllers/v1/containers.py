@@ -40,6 +40,7 @@ from zun.network import neutron
 from zun import objects
 from zun.pci import request as pci_request
 from zun.volume import cinder_api as cinder
+from zun.dir.driver import DirDriver
 
 CONF = zun.conf.CONF
 LOG = logging.getLogger(__name__)
@@ -284,7 +285,7 @@ class ContainersController(base.Controller):
         extra_spec['hints'] = container_dict.get('hints', None)
         extra_spec['pci_requests'] = pci_req
         if container_dict.has_key('privileged'):
-            privileged = container_dict.pop('privileged')
+            privileged = container_dict['privileged']
         else:
             privileged = False
         new_container = objects.Container(context, **container_dict)
@@ -386,22 +387,31 @@ class ContainersController(base.Controller):
         cinder_api = cinder.CinderAPI(context)
         requested_volumes = []
         for mount in mounts:
-            if mount.get('source'):
-                volume = cinder_api.search_volume(mount['source'])
-                auto_remove = False
-            else:
-                volume = cinder_api.create_volume(mount['size'])
-                auto_remove = True
-            cinder_api.ensure_volume_usable(volume)
-            volmapp = objects.VolumeMapping(
-                context,
-                volume_id=volume.id, volume_provider='cinder',
-                container_path=mount['destination'],
-                user_id=context.user_id,
-                project_id=context.project_id,
-                auto_remove=auto_remove)
-            requested_volumes.append(volmapp)
-
+            if mount.get('type') == 'volume':#
+                if mount.get('source'):
+                    volume = cinder_api.search_volume(mount['source'])
+                    auto_remove = False
+                else:
+                    volume = cinder_api.create_volume(mount['size'])
+                    auto_remove = True
+                cinder_api.ensure_volume_usable(volume)
+                volmapp = objects.VolumeMapping(
+                    context,
+                    volume_id=volume.id, volume_provider='cinder',
+                    container_path=mount['destination'],
+                    user_id=context.user_id,
+                    project_id=context.project_id,
+                    auto_remove=auto_remove)
+                requested_volumes.append({'type': mount['type'], 'volume': volmapp})
+            elif mount.get('type') == 'dir':
+               DirDriver.is_dir_available(mount['source'])
+               dirmapp = objects.DirectoryMapping(
+                    context,
+                    user_id=context.user_id,
+                    project_id=context.project_id,
+                    local_directory=mount['source'],
+                    container_path=mount['destination'])
+               requested_volumes.append({'type': mount['type'], 'directory': dirmapp})
         return requested_volumes
 
     def _check_security_group(self, context, security_group):
@@ -796,7 +806,7 @@ class ContainersController(base.Controller):
     @validation.validate_query_param(pecan.request, schema.query_param_resize)
     def resize(self, container_ident, **kwargs):
         """Resize container.
-
+container_start
         :param container_ident: UUID or Name of a container.
         """
         container = utils.get_container(container_ident)

@@ -140,6 +140,9 @@ class Container(Base):
     name = Column(String(255))
     image = Column(String(255))
     cpu = Column(Float)
+    cpu_policy = Column(String(255))
+    cpuset_cpus = Column(String(255))
+    cpuset_mems = Column(String(255))
     command = Column(String(255))
     memory = Column(String(255))
     status = Column(String(20))
@@ -164,6 +167,7 @@ class Container(Base):
     auto_remove = Column(Boolean, default=False)
     runtime = Column(String(32))
     disk = Column(Integer, default=0)
+    privileged = Column(Boolean, default=False)
 
 
 class VolumeMapping(Base):

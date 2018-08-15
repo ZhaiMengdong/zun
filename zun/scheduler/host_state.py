@@ -36,6 +36,7 @@ class HostState(object):
         self.cpu_used = 0
         self.numa_topology = None
         self.labels = None
+        self.total_containers = 0
         self.pci_stats = None
 
         # Resource oversubscription values for the compute host:
