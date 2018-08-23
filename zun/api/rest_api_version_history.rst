@@ -107,3 +107,9 @@ user documentation.
   Add a new attribute 'stop' to the request to delete containers.
   Users can use this attribute to stop and delete the container without
   using the --force option.
+
+1.13
+----
+
+  Add a new attribute 'cpu_policy'.
+  Users can use this attribute to determine which CPU policy the container uses.

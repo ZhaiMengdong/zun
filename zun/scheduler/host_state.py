@@ -65,5 +65,6 @@ class HostState(object):
         self.cpu_used = compute_node.cpu_used
         self.numa_topology = compute_node.numa_topology
         self.labels = compute_node.labels
+        self.total_containers = compute_node.total_containers
         self.pci_stats = pci_stats.PciDeviceStats(
             stats=compute_node.pci_device_pools)

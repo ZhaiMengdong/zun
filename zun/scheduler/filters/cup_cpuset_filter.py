@@ -1,4 +1,4 @@
-# Copyright (c) 2017 OpenStack Foundation
+# Copyright (c) 2018 China UnionPay
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -20,15 +20,20 @@ from zun.scheduler import filters
 LOG = logging.getLogger(__name__)
 
 
-class CPUSETFilter(filters.BaseHostFilter):
+class CUP_CPUSETFilter(filters.BaseHostFilter):
     """Filter the host by cpu and memory request of cpuset"""
 
     run_filter_once_per_request = True
 
     def host_passes(self, host_state, container, extra_spec):
+        print 'host_state: ', dir(host_state)
+        print 'container: ', container
+        print 'mem_free: ', host_state.mem_free
         mem_available = host_state.mem_free - host_state.mem_used
         pinned_cpus_flag = False
+        print 'numa_topology.nodes: ', dir(host_state.numa_topology.nodes)
         for numa_node in host_state.numa_topology.nodes:
+            print 'len_numa_node.cpuset: ', len(numa_node.cpuset)
             if numa_node.pinned_cpus:
                 pinned_cpus_flag = True
 
@@ -37,11 +42,15 @@ class CPUSETFilter(filters.BaseHostFilter):
                 return False
             else:
                 for numa_node in host_state.numa_topology.nodes:
+                    print numa_node
+                    print numa_node.cpuset
+                    print numa_node.mem_available
                     if len(numa_node.cpuset) - len(
                             numa_node.pinned_cpus) > container.cpu and numa_node.mem_available > int(
                         container.memory[:-1]):
                         host_state.limits['cpuset'] = {'node': numa_node.id, 'cpuset_cpu': numa_node.cpuset,
-                                                      'cpuset_mem': numa_node.mem_available}
+                                                       'cpuset_cpu_pinned': numa_node.pinned_cpus,
+                                                       'cpuset_mem': numa_node.mem_available}
                         return True
                     else:
                         return False

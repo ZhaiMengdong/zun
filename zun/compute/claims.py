@@ -101,7 +101,8 @@ class Claim(NopClaim):
         self.tracker.abort_container_claim(self.context, self.container)
 
     def claim_cpuset_cpu_for_container(self, container, limits):
-        cpuset_cpu_usage = random.sample(limits['cpuset']['cpuset_cpu'], int(self.cpu))
+        avaliable_cpu = list(set(limits['cpuset']['cpuset_cpu'])-set(limits['cpuset']['cpuset_cpu_pinned']))
+        cpuset_cpu_usage = random.sample(avaliable_cpu, int(self.cpu))
         container.cpuset_cpus = ','.join([str(x) for x in cpuset_cpu_usage])
 
     def claim_cpuset_mem_for_container(self, container, limits):
@@ -125,6 +126,7 @@ class Claim(NopClaim):
         # unlimited:
         memory_limit = limits.get('memory')
         cpu_limit = limits.get('cpu')
+        cpuset_limit = limits.get('cpuset', None)
 
         LOG.info('Attempting claim: memory %(memory)s, '
                  'cpu %(cpu).02f CPU',

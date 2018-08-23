@@ -66,7 +66,7 @@ Related options:
                     "CPUFilter",
                     "RamFilter",
                     "ComputeFilter",
-                    "CPUSETFilter",
+                    "CUP_CPUSETFilter",
                     ],
                 help="""
 Filters that the scheduler will use.
