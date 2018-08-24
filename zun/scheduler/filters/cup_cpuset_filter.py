@@ -57,12 +57,25 @@ class CUP_CPUSETFilter(filters.BaseHostFilter):
         else:
             container.cpu_policy = 'shared'
             if not pinned_cpus_flag:
-                if container.memory:
-                    if mem_available >= container.memory:
-                        return True
-                    else:
+                if container.cpu:
+                    if host_state.total_containers != 0 and host_state.cpu_used == 0:
                         return False
+                    else:
+                        if container.memory:
+                            if container.memory > host_state.mem_available:
+                                return True
+                            else:
+                                return False
+                        else:
+                            return True
                 else:
-                    return True
+                    if host_state.cpu_used != 0:
+                        return False
+                    else:
+                        if container.memory:
+                            if container.memory > host_state.mem_available:
+                                return True
+                            else:
+                                return False
             else:
                 return False
