@@ -26,14 +26,9 @@ class CUP_CPUSETFilter(filters.BaseHostFilter):
     run_filter_once_per_request = True
 
     def host_passes(self, host_state, container, extra_spec):
-        print 'host_state: ', dir(host_state)
-        print 'container: ', container
-        print 'mem_free: ', host_state.mem_free
         mem_available = host_state.mem_free - host_state.mem_used
         pinned_cpus_flag = False
-        print 'numa_topology.nodes: ', dir(host_state.numa_topology.nodes)
         for numa_node in host_state.numa_topology.nodes:
-            print 'len_numa_node.cpuset: ', len(numa_node.cpuset)
             if numa_node.pinned_cpus:
                 pinned_cpus_flag = True
 
@@ -42,9 +37,6 @@ class CUP_CPUSETFilter(filters.BaseHostFilter):
                 return False
             else:
                 for numa_node in host_state.numa_topology.nodes:
-                    print numa_node
-                    print numa_node.cpuset
-                    print numa_node.mem_available
                     if len(numa_node.cpuset) - len(
                             numa_node.pinned_cpus) > container.cpu and numa_node.mem_available > int(
                         container.memory[:-1]):
