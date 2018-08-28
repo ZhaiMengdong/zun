@@ -41,6 +41,17 @@ LSCPU_NO_ONLINE = """# The following is the parsable format, which can be fed to
 1,2
 1,3"""
 
+LSNUMA_INFO = '''available: 2 nodes (0-1)
+node 0 cpus: 0 1 2 3 4 5 12 13 14 15 16 17
+node 0 size: 32739 MB
+node 0 free: 1251 MB
+node 1 cpus: 6 7 8 9 10 11 18 19 20 21 22 23
+node 1 size: 32768 MB
+node 1 free: 10189 MB
+node distances:
+node   0   1 
+  0:  10  20 
+  1:  20  10'''
 
 class TestOSCapability(base.BaseTestCase):
     @mock.patch('zun.common.utils.execute')
@@ -62,6 +73,13 @@ class TestOSCapability(base.BaseTestCase):
                                    LSCPU_NO_ONLINE]
         expected_output = {'0': [0, 1], '1': [2, 3]}
         output = os_capability_linux.LinuxHost().get_cpu_numa_info()
+        self.assertEqual(expected_output, output)
+
+    @mock.patch('zun.common.utils.execute')
+    def test_get_mem_numa_info(self, mock_output):
+        mock_output.return_value = LSNUMA_INFO
+        output = os_capability_linux.LinuxHost().get_mem_numa_info()
+        expected_output = [32739, 32768]
         self.assertEqual(expected_output, output)
 
     def test_get_host_mem(self):

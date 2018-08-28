@@ -46,6 +46,9 @@ _basic_keys = (
     'hostname',
     'disk',
     'privileged',
+    'cpu_policy',
+    'cpuset_cpus',
+    'cpuset_mems',
 )
 
 

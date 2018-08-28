@@ -189,7 +189,7 @@ class DockerDriver(driver.ContainerDriver):
                 disk_size = str(container.disk) + 'G'
                 host_config['storage_opt'] = {'size': disk_size}
             host_config['privileged'] = privileged
-            if privileged == 'dedicated':
+            if container.cpu_policy == 'dedicated':
                 host_config['cpuset_cpus'] = container.cpuset_cpus
                 host_config['cpuset_mems'] = str(container.cpuset_mems)
 

@@ -174,7 +174,7 @@ class Claim(NopClaim):
         type_ = _("cpuset_cpu")
         unit = "core"
         total = len(limit['cpuset_cpu'])
-        used = len(resources.numa_topology.nodes[limit['node']].pinned_cpus)
+        used = len(limit['cpuset_cpu_pinned'])
         requested = self.cpu
 
         return self._test(type_, unit, total, used, requested, len(limit['cpuset_cpu']))

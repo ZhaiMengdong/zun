@@ -307,6 +307,40 @@ class TestContainerController(api_base.FunctionalTest):
     @patch('zun.network.neutron.NeutronAPI.get_available_network')
     @patch('zun.compute.api.API.container_create')
     @patch('zun.compute.api.API.image_search')
+    def test_create_container_with_cpuset(self, mock_search,
+                                          mock_container_create,
+                                          mock_neutron_get_network):
+        mock_container_create.side_effect = lambda x, y, **z: y
+        fake_network = {'id': 'foo'}
+        mock_neutron_get_network.return_value = fake_network
+        # Create a container with a command
+        params = ('{"name": "MyDocker", "image": "ubuntu",'
+                  '"environment": {"key1": "val1", "key2": "val2"},'
+                  '"cpu_policy": "dedicated", "cpu": 2, "memory": "200"}')
+        response = self.post('/v1/containers/',
+                             params=params,
+                             content_type='application/json')
+        self.assertEqual(202, response.status_int)
+        response = self.get('v1/containers')
+        self.assertEqual(200, response.status_int)
+        self.assertEqual(2, len(response.json))
+        c = response.json['containers'][0]
+        self.assertIsNotNone(c.get('uuid'))
+        self.assertEqual('MyDocker', c.get('name'))
+        self.assertEqual("200M", c.get('memory'))
+        self.assertEqual(2.0, c.get('cpu'))
+        self.assertEqual("dedicated", c.get('cpu_policy'))
+        self.assertIsNotNone(c.get('cpuset_cpus'))
+        mock_neutron_get_network.assert_called_once()
+        requested_networks = \
+            mock_container_create.call_args[1]['requested_networks']
+        self.assertEqual(1, len(requested_networks))
+        self.assertEqual(fake_network['id'], requested_networks[0]['network'])
+
+
+    @patch('zun.network.neutron.NeutronAPI.get_available_network')
+    @patch('zun.compute.api.API.container_create')
+    @patch('zun.compute.api.API.image_search')
     def test_create_container_without_memory(self, mock_search,
                                              mock_container_create,
                                              mock_neutron_get_network):

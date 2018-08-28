@@ -38,14 +38,15 @@ class CUP_CPUSETFilter(filters.BaseHostFilter):
             else:
                 for numa_node in host_state.numa_topology.nodes:
                     if len(numa_node.cpuset) - len(
-                            numa_node.pinned_cpus) > container.cpu and numa_node.mem_available > int(
+                            numa_node.pinned_cpus) >= container.cpu and numa_node.mem_available >= int(
                         container.memory[:-1]):
                         host_state.limits['cpuset'] = {'node': numa_node.id, 'cpuset_cpu': numa_node.cpuset,
                                                        'cpuset_cpu_pinned': numa_node.pinned_cpus,
                                                        'cpuset_mem': numa_node.mem_available}
+                        host_state.limits['cpu'] = host_state.cpus
+                        host_state.limits['memory'] = host_state.mem_total
                         return True
-                    else:
-                        return False
+                return False
         else:
             container.cpu_policy = 'shared'
             if not pinned_cpus_flag:
@@ -53,19 +54,26 @@ class CUP_CPUSETFilter(filters.BaseHostFilter):
                     if host_state.total_containers != 0 and host_state.cpu_used == 0:
                         return False
                     else:
-                        if container.memory:
-                            if container.memory > host_state.mem_available:
-                                return True
+                        if container.cpu <= cpu_free:
+                            if container.memory:
+                                if container.memory >= mem_available:
+                                    host_state.limits['cpu'] = host_state.cpus
+                                    host_state.limits['memory'] = host_state.mem_total
+                                    return True
+                                else:
+                                    return False
                             else:
-                                return False
-                        else:
-                            return True
+                                host_state.limits['cpu'] = host_state.cpus
+                                host_state.limits['memory'] = host_state.mem_total
+                                return True
                 else:
                     if host_state.cpu_used != 0:
                         return False
                     else:
                         if container.memory:
-                            if container.memory > host_state.mem_available:
+                            if container.memory >= host_state.mem_available:
+                                host_state.limits['cpu'] = host_state.cpus
+                                host_state.limits['memory'] = host_state.mem_total
                                 return True
                             else:
                                 return False
