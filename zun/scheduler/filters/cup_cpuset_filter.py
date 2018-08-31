@@ -31,6 +31,8 @@ class CUP_CPUSETFilter(filters.BaseHostFilter):
         for numa_node in host_state.numa_topology.nodes:
             if numa_node.pinned_cpus:
                 pinned_cpus_flag = True
+        if container.cpu_policy == None:
+            container.cpu_policy = 'shared'
 
         if container.cpu_policy == 'dedicated':
             if host_state.total_containers and (not pinned_cpus_flag):
@@ -48,7 +50,6 @@ class CUP_CPUSETFilter(filters.BaseHostFilter):
                         return True
                 return False
         else:
-            container.cpu_policy = 'shared'
             if not pinned_cpus_flag:
                 if container.cpu:
                     if host_state.total_containers != 0 and host_state.cpu_used == 0:
