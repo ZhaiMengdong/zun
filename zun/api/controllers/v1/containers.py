@@ -40,7 +40,6 @@ from zun.network import neutron
 from zun import objects
 from zun.pci import request as pci_request
 from zun.volume import cinder_api as cinder
-from zun.dir.driver import DirDriver
 
 CONF = zun.conf.CONF
 LOG = logging.getLogger(__name__)
@@ -404,7 +403,6 @@ class ContainersController(base.Controller):
                     auto_remove=auto_remove)
                 requested_volumes.append({'type': mount['type'], 'volume': volmapp})
             elif mount.get('type') == 'dir':
-               DirDriver.is_dir_available(mount['source'])
                dirmapp = objects.DirectoryMapping(
                     context,
                     user_id=context.user_id,

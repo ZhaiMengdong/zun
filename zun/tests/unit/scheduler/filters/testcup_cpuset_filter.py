@@ -25,7 +25,7 @@ class TestCUP_CPUSETFilter(base.TestCase):
         self.context = context.RequestContext('fake_user', 'fake_project')
 
     def testcup_cpuset_filter_pass_dedicated(self):
-        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter(self.context)
+        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter()
         container = objects.Container(self.context)
         container.cpu_policy = 'dedicated'
         container.cpu = 2.0
@@ -42,7 +42,7 @@ class TestCUP_CPUSETFilter(base.TestCase):
         self.assertTrue(self.filt_cls.host_passes(host, container, extra_spec))
 
     def testcup_cpuset_filter_fail_dedicated_1(self):
-        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter(self.context)
+        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter()
         container = objects.Container(self.context)
         container.cpu_policy = 'dedicated'
         container.cpu = 4.0
@@ -59,7 +59,7 @@ class TestCUP_CPUSETFilter(base.TestCase):
         self.assertFalse(self.filt_cls.host_passes(host, container, extra_spec))
 
     def testcup_cpuset_filter_fail_dedicated_2(self):
-        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter(self.context)
+        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter()
         container = objects.Container(self.context)
         container.cpu_policy = 'dedicated'
         container.cpu = 2.0
@@ -76,7 +76,7 @@ class TestCUP_CPUSETFilter(base.TestCase):
         self.assertFalse(self.filt_cls.host_passes(host, container, extra_spec))
 
     def testcup_cpuset_filter_pass_shared_with_cpus_and_memory(self):
-        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter(self.context)
+        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter()
         container = objects.Container(self.context)
         container.cpu_policy = 'shared'
         container.cpu = 4.0
@@ -94,7 +94,7 @@ class TestCUP_CPUSETFilter(base.TestCase):
         self.assertTrue(self.filt_cls.host_passes(host, container, extra_spec))
 
     def testcup_cpuset_filter_fail_shared_with_cpus_and_memory_1(self):
-        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter(self.context)
+        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter()
         container = objects.Container(self.context)
         container.cpu_policy = 'shared'
         container.cpu = 4.0
@@ -112,7 +112,7 @@ class TestCUP_CPUSETFilter(base.TestCase):
         self.assertFalse(self.filt_cls.host_passes(host, container, extra_spec))
 
     def testcup_cpuset_filter_fail_shared_with_cpus_and_memory_2(self):
-        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter(self.context)
+        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter()
         container = objects.Container(self.context)
         container.cpu_policy = 'shared'
         container.cpu = 4.0
@@ -130,7 +130,7 @@ class TestCUP_CPUSETFilter(base.TestCase):
         self.assertFalse(self.filt_cls.host_passes(host, container, extra_spec))
 
     def testcup_cpuset_filter_fail_shared_with_cpus_and_memory_3(self):
-        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter(self.context)
+        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter()
         container = objects.Container(self.context)
         container.cpu_policy = 'shared'
         container.cpu = 7.0
@@ -148,7 +148,7 @@ class TestCUP_CPUSETFilter(base.TestCase):
         self.assertFalse(self.filt_cls.host_passes(host, container, extra_spec))
 
     def testcup_cpuset_filter_fail_shared_with_cpus_and_memory_4(self):
-        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter(self.context)
+        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter()
         container = objects.Container(self.context)
         container.cpu_policy = 'shared'
         container.cpu = 4.0
@@ -166,7 +166,7 @@ class TestCUP_CPUSETFilter(base.TestCase):
         self.assertFalse(self.filt_cls.host_passes(host, container, extra_spec))
 
     def testcup_cpuset_filter_pass_shared_with_memory_and_without_cpus(self):
-        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter(self.context)
+        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter()
         container = objects.Container(self.context)
         container.cpu_policy = 'shared'
         container.memory = '1024M'
@@ -183,7 +183,7 @@ class TestCUP_CPUSETFilter(base.TestCase):
         self.assertTrue(self.filt_cls.host_passes(host, container, extra_spec))
 
     def testcup_cpuset_filter_fail_shared_with_memory_and_without_cpus_1(self):
-        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter(self.context)
+        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter()
         container = objects.Container(self.context)
         container.cpu_policy = 'shared'
         container.memory = '4096M'
@@ -200,7 +200,7 @@ class TestCUP_CPUSETFilter(base.TestCase):
         self.assertFalse(self.filt_cls.host_passes(host, container, extra_spec))
 
     def testcup_cpuset_filter_fail_shared_with_memory_and_without_cpus_2(self):
-        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter(self.context)
+        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter()
         container = objects.Container(self.context)
         container.cpu_policy = 'shared'
         container.memory = '4096M'
@@ -217,7 +217,7 @@ class TestCUP_CPUSETFilter(base.TestCase):
         self.assertFalse(self.filt_cls.host_passes(host, container, extra_spec))
 
     def testcup_cpuset_filter_pass_shared_with_cpus_and_without_memory(self):
-        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter(self.context)
+        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter()
         container = objects.Container(self.context)
         container.cpu_policy = 'shared'
         container.cpu = 4.0
@@ -234,7 +234,7 @@ class TestCUP_CPUSETFilter(base.TestCase):
         self.assertTrue(self.filt_cls.host_passes(host, container, extra_spec))
 
     def testcup_cpuset_filter_fail_shared_with_cpus_and_without_memory_1(self):
-        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter(self.context)
+        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter()
         container = objects.Container(self.context)
         container.cpu_policy = 'shared'
         container.cpu = 7.0
@@ -251,7 +251,7 @@ class TestCUP_CPUSETFilter(base.TestCase):
         self.assertTrue(self.filt_cls.host_passes(host, container, extra_spec))
 
     def testcup_cpuset_filter_fail_shared_with_cpus_and_without_memory_2(self):
-        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter(self.context)
+        self.filt_cls = cup_cpuset_filter.CUP_CPUSETFilter()
         container = objects.Container(self.context)
         container.cpu_policy = 'shared'
         container.cpu = 4.0

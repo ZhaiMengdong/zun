@@ -32,6 +32,7 @@ from zun.container import driver
 from zun.network import network as zun_network
 from zun import objects
 from zun.volume import driver as vol_driver
+from zun.dir.driver import DirDriver
 
 
 CONF = zun.conf.CONF
@@ -254,6 +255,7 @@ class DockerDriver(driver.ContainerDriver):
           elif volume['type'] == 'dir':
               source = volume['directory'].local_directory
               destination = volume['directory'].container_path
+              DirDriver.is_dir_available(source)
           binds[source] = {'bind': destination}
         return binds
 

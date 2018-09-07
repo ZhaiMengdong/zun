@@ -26,12 +26,12 @@ class CUP_CPUSETFilter(filters.BaseHostFilter):
     run_filter_once_per_request = True
 
     def host_passes(self, host_state, container, extra_spec):
-        mem_available = host_state.mem_free - host_state.mem_used
+        cpu_free = host_state.cpus - host_state.cpu_used
         pinned_cpus_flag = False
         for numa_node in host_state.numa_topology.nodes:
             if numa_node.pinned_cpus:
                 pinned_cpus_flag = True
-        if container.cpu_policy == None:
+        if container.cpu_policy is None:
             container.cpu_policy = 'shared'
 
         if container.cpu_policy == 'dedicated':
@@ -57,7 +57,7 @@ class CUP_CPUSETFilter(filters.BaseHostFilter):
                     else:
                         if container.cpu <= cpu_free:
                             if container.memory:
-                                if container.memory >= mem_available:
+                                if container.memory >= host_state.mem_available:
                                     host_state.limits['cpu'] = host_state.cpus
                                     host_state.limits['memory'] = host_state.mem_total
                                     return True

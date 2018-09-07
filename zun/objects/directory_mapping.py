@@ -1,10 +1,8 @@
-from oslo_log import log as logging
 from oslo_versionedobjects import fields
 
 from zun.common import exception
 from zun.db import api as dbapi
 from zun.objects import base
-from zun.objects import container
 
 
 _DIRECTORY_MAPPING_OPTIONAL_JOINED_FIELD = []
